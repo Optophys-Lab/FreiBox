@@ -1,1 +1,11 @@
+Please check this miniscope discussion to find all details:
+https://groups.google.com/g/miniscope/c/aT1OJl9xL8Y/m/Yal-vYsRCwAJ (28 oct. 2020, 15:58:07):
+
+I designed Miniscope holder based on the 3 following parts:
+- Mirror Mount (KMS/M, Thorlabs)
+- STL part1 holds the Mirror Mount.  A M4 screw is used between Part1 and mirror mount. Another M4 (and hex) between Part1 and stereotax rod.
+- STL part2, hold the miniscope. A M3 screw is used between Part2 and mirror mount"
+
+Printing instruction: PLA, 0.1mm, 100% infill.
+
 
