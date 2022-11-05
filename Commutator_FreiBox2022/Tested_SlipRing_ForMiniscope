@@ -1,0 +1,16 @@
+Successfully tested slipRing:
+  1. For the published design: Slip Ring with Flange - 22mm diameter, 12 wires, max 240V @ 2A (Adafruit 1196),  https://www.adafruit.com/product/1196
+  2. Compatible with the published design:LMIAOM 22 Mm 24ch, 1 x 2/4/6/8/12/18/24/36 channel wires capsule grinding ring 1-2A sanding ring 8.5/12.5/15.5/22 mm mini rotary joint conductive connectors DIY accessories mounting parts (colour: 22 mm 24 mm). ch), https://www.amazon.de/-/en/gp/product/B09M421HKJ/ref=ppx_yo_dt_b_asin_title_o05_s00?ie=UTF8&th=1
+
+  3. For the smaller commutator design: Miniature Slip Ring - 12mm diameter, 12 wires, max 240V @ 2A (Adafruit 1195),  https://www.adafruit.com/product/1195
+  
+Remarks:
+ - The #2 could be used to relay OpenEphys signals
+ - The #1 and #3 are compatible with neuropixel cables
+ - In our hands, the #3 is the best!
+
+Advices:
+- Shorten as much as possible the slip ring cables
+- Don't let the miniscope cable touching the motor
+
+Brice Nov2022
