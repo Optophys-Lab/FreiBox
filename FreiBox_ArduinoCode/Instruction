@@ -1,0 +1,14 @@
+
+ 
+/!\ Please check carefully the gate closing section before modify it. It includes a security checking to avoid closing the gate on the mouse head if the animal is still in the licking chamber   
+
+ 
+The only parameters to customize before starting are the opening (max_position_opening) ans closing (max_position_closing) position of the gate servomotor. These values depend on the mounting settings of the gate 
+
+
+Due to the overflow of Arduino with the function micro(), the session stop after 65min. Before starting a new Session, restart the Arduino
+
+The code contains:
+ - White noise generator. 
+ - Training stages
+ - Posibility to activate a laser on different trial windows
