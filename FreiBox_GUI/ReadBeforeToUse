@@ -1,0 +1,5 @@
+Written By Megan Schneck
+
+
+To start the experiment, please use the function 'Run_Experiment'. 
+/!\ In this function, the Arduino 'COM' number has to be changed in accordance to your system. You can easily find this number by using the Arduino software.
