@@ -4,6 +4,6 @@ It contains codes, references tables for electronic components, 3D stl files and
 
 Contact:
 Brice De La Crompe,
-brice . de . la . crompe /at/ biologie . uni-freiburg . de 
+brice . de . la . crompe /at/ biologie . uni-freiburg . de,
 Optophysiology Lab (Ilka Diester's lab),
 Freiburg, Germany
