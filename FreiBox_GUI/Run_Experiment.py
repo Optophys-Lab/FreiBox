@@ -6,7 +6,10 @@ from Helper_fcts_run_exp import data_to_time_stamps_in_s
 from Outputting_data import finalize_output
 from Send_parameters import send_parameters_to_arduino
 
-# set path for output file
+from DataBaseConnection import DB, finalize_session
+from datastructure_tools.utils import SessionClass
+
+
 path = "C:\\Users\\ms823\\My Documents\\Double_lick_spout\\DREADD_OFC_pilot_Aug2022\\raw_data\\"
 # specify arduino and transmission parameters
 com = 'COM15'
@@ -177,6 +180,12 @@ mainloop()
 user_input, laser_in_words, laser_b_in_words = run_GUI(user_input)
 # kill GUI after it has been used
 root.destroy()
+
+session = SessionClass(DB, animal_id=user_input['Subject'], session_note=user_input['Extra_info'],
+                       project=DB.cfg['project'], user=DB.cfg['user_id'], experiment_template=DB.cfg['experiment'],
+                       expName=DB.cfg['sub_experiment'])
+resulting_file = path + str(user_input["Subject"]) + '\\' + str(date_and_time) + '_' + str(
+        user_input["Subject"] + '_behavior.csv')
 # wait a little, then send GUI parameters to arduino
 time.sleep(1)
 send_parameters_to_arduino(arduino, user_input)
@@ -186,91 +195,102 @@ start_time = time.time()  # in seconds
 arduino.reset_input_buffer()
 arduino.reset_output_buffer()
 # Main loop for python-arduino data exchange
-while True:
-    # checks for input from Arduino
-    if arduino.in_waiting > 0:
-        # initialize list to keep track of how many parameters we have already received from the arduino
-        list_of_read_variables = []
-        # keep checking for arduino input until we have received all expected parameters
-        while len(set(list_of_read_variables)) <= (len(dict_output_arrays.keys()) + len(dict_data.keys())) + 1:
-            # read Arduino input
-            ser_bytes = arduino.readline()
-            # decode Arduino input
-            decoded_strings = str(ser_bytes[:-2].decode("utf-8"))
-            if decoded_strings:
-                print(decoded_strings)  # print arduino input
-                # first deal with all single-value input parameters
-                for key, value in dict_data.items():  # dictionary containing keys to identify each expected parameter
-                    if key in decoded_strings:
-                        # check only parameters we have not yet received
-                        if key not in list_of_read_variables:
-                            # keep track of read parameters
-                            list_of_read_variables.append(key)
-                            # transfer the data to timestamps in s and save it in dictionary
-                            data_in_s = data_to_time_stamps_in_s(decoded_strings, key, value)
-                            break
-                # separate treatment for array-type input because here we have several incoming values to parse
-                else:
-                    # dictionary containing keys to identify each expected array
-                    for description, list_of_arrays in list(dict_output_arrays.items()):
-                        if description in decoded_strings and description not in list_of_read_variables:
-                            # keep track of read parameters
-                            list_of_read_variables.append(description)
-                            # strip data from its descriptor
-                            data = decoded_strings.strip(description)
-                            if data:
-                                # values in array separated by ;
-                                data_separated = data.split(';')
-                                # check if we have any values other than '0' in the array
-                                if len(set(data_separated)) > 1:
-                                    single_trial_data = []
-                                    for number in data_separated:
-                                        if number != '0':
-                                            try:
-                                                float(number)
-                                                # transfer the data to timestamps in s
-                                                single_trial_data.append(float(number) / 1000 / 1000)
-                                            except ValueError:
-                                                pass
-                                    list_of_arrays.append(single_trial_data)  # save into nested list
-                                else:
-                                    list_of_arrays.append([float(-1)])
-                                # store in array dictionary
-                                dict_output_arrays[description] = dict_output_arrays[description] + list_of_arrays
+try:
+    while True:
+        # checks for input from Arduino
+        if arduino.in_waiting > 0:
+            # initialize list to keep track of how many parameters we have already received from the arduino
+            list_of_read_variables = []
+            # keep checking for arduino input until we have received all expected parameters
+            while len(set(list_of_read_variables)) <= (len(dict_output_arrays.keys()) + len(dict_data.keys())) + 1:
+                # read Arduino input
+                ser_bytes = arduino.readline()
+                # decode Arduino input
+                decoded_strings = str(ser_bytes[:-2].decode("utf-8"))
+                if decoded_strings:
+                    print(decoded_strings)  # print arduino input
+                    # first deal with all single-value input parameters
+                    for key, value in dict_data.items():  # dictionary containing keys to identify each expected parameter
+                        if key in decoded_strings:
+                            # check only parameters we have not yet received
+                            if key not in list_of_read_variables:
+                                # keep track of read parameters
+                                list_of_read_variables.append(key)
+                                # transfer the data to timestamps in s and save it in dictionary
+                                data_in_s = data_to_time_stamps_in_s(decoded_strings, key, value)
                                 break
+                    # separate treatment for array-type input because here we have several incoming values to parse
                     else:
-                        # marker from arduino for session end
-                        if "done" in decoded_strings:
-                            done = 1
-                            break
-            # check if we have received all expected data, then signal arduino that data transfer had concluded
-            if len(set(list_of_read_variables)) == len(dict_output_arrays.keys()) + len(dict_data.keys()):
-                # signal for arduino to stop sending data
-                arduino.write("rec".encode())
-                print("STOP ARDUINO 1")
-                # wait for data to arrive at arduino
-                time.sleep(0.1)
-                # during ITI, print and plot session statistics
-                current_block_number, trials_in_old_block = print_and_plot_session_stats(
-                    dict_data, user_input, current_trial_number, current_block_number, trials_in_old_block, com,
-                    start_time)
-                # keep track of current trial number
-                current_trial_number = current_trial_number + 1
-                # output data into csv file
-                finalize_output(first_trial_over, user_input, current_trial_number, laser_in_words,
-                                laser_b_in_words, dict_data, dict_output_arrays, path)
-                # marker to distinguish first trial
-                first_trial_over = 1
-                # reset buffers
-                time.sleep(3)
-                arduino.reset_input_buffer()
-                arduino.reset_output_buffer()
-                list_of_read_variables = []  # reset for next trial
-            # if we have not received all expected data, continue receiving
-            else:
-                continue
-        # if we receive signal from the arduino that session has ended, break out of while loop
-        if done > 0:
-            break
-    # time between each loop iteration
-    time.sleep(0.01)
+                        # dictionary containing keys to identify each expected array
+                        for description, list_of_arrays in list(dict_output_arrays.items()):
+                            if description in decoded_strings and description not in list_of_read_variables:
+                                # keep track of read parameters
+                                list_of_read_variables.append(description)
+                                # strip data from its descriptor
+                                data = decoded_strings.strip(description)
+                                if data:
+                                    # values in array separated by ;
+                                    data_separated = data.split(';')
+                                    # check if we have any values other than '0' in the array
+                                    if len(set(data_separated)) > 1:
+                                        single_trial_data = []
+                                        for number in data_separated:
+                                            if number != '0':
+                                                try:
+                                                    float(number)
+                                                    # transfer the data to timestamps in s
+                                                    single_trial_data.append(float(number) / 1000 / 1000)
+                                                except ValueError:
+                                                    pass
+                                        list_of_arrays.append(single_trial_data)  # save into nested list
+                                    else:
+                                        list_of_arrays.append([float(-1)])
+                                    # store in array dictionary
+                                    dict_output_arrays[description] = dict_output_arrays[description] + list_of_arrays
+                                    break
+                        else:
+                            # marker from arduino for session end
+                            if "done" in decoded_strings:
+                                done = 1
+                                break
+                # check if we have received all expected data, then signal arduino that data transfer had concluded
+                if len(set(list_of_read_variables)) == len(dict_output_arrays.keys()) + len(dict_data.keys()):
+                    # signal for arduino to stop sending data
+                    arduino.write("rec".encode())
+                    print("STOP ARDUINO 1")
+                    # wait for data to arrive at arduino
+                    time.sleep(0.1)
+                    # during ITI, print and plot session statistics
+                    current_block_number, trials_in_old_block = print_and_plot_session_stats(
+                        dict_data, user_input, current_trial_number, current_block_number, trials_in_old_block, com,
+                        start_time)
+                    # keep track of current trial number
+                    current_trial_number = current_trial_number + 1
+                    # output data into csv file
+                    finalize_output(first_trial_over, user_input, current_trial_number, laser_in_words,
+                                    laser_b_in_words, dict_data, dict_output_arrays, path)
+                    # marker to distinguish first trial
+                    first_trial_over = 1
+                    # reset buffers
+                    time.sleep(3)
+                    arduino.reset_input_buffer()
+                    arduino.reset_output_buffer()
+                    list_of_read_variables = []  # reset for next trial
+                # if we have not received all expected data, continue receiving
+                else:
+                    continue
+            # if we receive signal from the arduino that session has ended, break out of while loop
+            if done > 0:
+                break
+        # time between each loop iteration
+        time.sleep(0.01)
+
+    finalize_session(session, resulting_file)
+    #this creates session paths, pushes data to DB and copies behavioral data to server
+except Exception:
+    #not so graceful shutdown
+    #This needs to be adopted to the pulling the plug exception...
+    finalize_session(session, resulting_file)
+
+
+

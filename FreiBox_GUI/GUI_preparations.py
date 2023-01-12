@@ -1,6 +1,6 @@
 from tkinter import *
 import random 
-
+from DataBaseConnection import animals
 
 # function for GUI parts with write-in option
 def fields_to_write_in(root):
@@ -13,10 +13,12 @@ def fields_to_write_in(root):
             Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=0, sticky=W, pady=20)
             subject_nr = StringVar()
             # set default value
-            subject_nr.set("0")
-            ent = Entry(root)
-            ent.grid(row=0, column=1)
-            subject_nr = ent
+            #subject_nr.set("0")
+            #ent = Entry(root)
+            #ent.grid(row=0, column=1)
+            animal_menu = OptionMenu(root, subject_nr, *animals)
+            animal_menu.grid(row=0, column=1)
+            #subject_nr = ent
         elif field == "Extra info":
             # set up write-in field
             Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=1, sticky=W, pady=20)
