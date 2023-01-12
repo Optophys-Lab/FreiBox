@@ -1,13 +1,15 @@
 from tkinter import *
 import random 
-from DataBaseConnection import animals
+from DataBaseConnection import animals, exp_templates
 
 # function for GUI parts with write-in option
 def fields_to_write_in(root):
     # set variables for the 2 write-in options, subject number and extra information
     global subject_nr
     global extra_info
-    for field in ["Subject", "Extra info"]:
+    global weight
+    global weight_note
+    for field in ["Subject", "Extra info","ExpType","Weight", "Weight Note"]:
         if field == "Subject":
             # set up write-in field
             Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=0, sticky=W, pady=20)
@@ -28,6 +30,32 @@ def fields_to_write_in(root):
             ent = Entry(root)
             ent.grid(row=1, column=1)
             extra_info = ent
+
+        elif field == "ExpType":
+            # set up write-in field
+            Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=2, sticky=W, pady=20)
+            exptype = StringVar()
+            exptype.set(exp_templates[0])
+            exptyp_menu = OptionMenu(root, exptype, *exp_templates)
+            exptyp_menu.grid(row=2, column=1)
+
+        elif field == "Weight":
+            Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=3, sticky=W, pady=20)
+            weight = StringVar()
+            # set default value
+            weight.set("")
+            ent = Entry(root)
+            ent.grid(row=3, column=1)
+            weight = ent
+
+        elif field == "Weight Note":
+            Label(root, width=20, text=field, font=("Helvetica", 14)).grid(row=4, sticky=W, pady=20)
+            weight_note = StringVar()
+            # set default value
+            weight_note.set("")
+            ent = Entry(root)
+            ent.grid(row=4, column=1)
+            weight_note = ent
     return subject_nr, extra_info
 
 
@@ -97,6 +125,8 @@ def check_choices(input_first_window, input_second_window, user_input):
     if user_input["Subject"] == "":
         user_input["Subject"] = "0"
     user_input["Extra_info"] = extra_info.get()
+    user_input["weight"] = weight.get()
+    user_input["weight note"] = weight_note.get()
     # return user choices
     return user_input, laser_in_words, laser_b_in_words
 

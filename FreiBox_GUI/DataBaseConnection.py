@@ -3,16 +3,23 @@ from shutil import copy2
 
 import datastructure_tools.utils
 from datastructure_tools.DataBaseAccess import DataBaseAccess
+from datastructure_tools.FileCommander import FileCommander
+
 DB = DataBaseAccess()
 
-user = 'as153'
 project = DB.cfg['project']
 experiment = DB.cfg['experiment']
 sub_experiment = DB.cfg['sub_experiment']
 
-animals = (DB.Animal - DB.Animal.Death & {"user": user}).fetch('animal_id')
+users2check = ['ms823', 'bd1033']
+animals = list()
+for user in users2check:
+    animals.extend((DB.Animal.User - DB.Animal.Death & {"user": user}).fetch('animal_id'))
 
-
+exp_templates = DB.ExperimentTemplate.fetch('experiment_template')
+exp_templates = [exp for exp in exp_templates if "Reversal" in exp] # only reversal types
+#TODO add choose experimental type !
+#TODO add weight fields !
 def finalize_session(session: datastructure_tools.utils.SessionClass, resulting_file: str) -> bool:
     """
     This function creates session paths, pushes data to DB using SessionClass from utils
@@ -23,7 +30,15 @@ def finalize_session(session: datastructure_tools.utils.SessionClass, resulting_
     """
     session.createSession_path()
     session.checkInputs()
+    if session.weight:
+        session.pushWeights()
+    block = [block for block in session.pipeline['0_raw'] if 'beh' in block]
     # copy the file
-    target_path = Path(DB.cfg['Server_path']) / session.session_dir
-    copy2(resulting_file, target_path)
+    target_path = Path(DB.cfg['Server_path']) / session.session_dir / block[0]
+    if target_path.exists():
+        copy2(resulting_file, target_path)
+    else:
+        raise FileNotFoundError('path %s was not found'%target_path)
+
+    #filecommander = FileCommander(DB=DB, session=session.session_id)
     return True

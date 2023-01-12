@@ -61,7 +61,7 @@ def prepare_first_GUI_window():
 # Set dropdown menus in the first GUI window
 def dropdownmenus():
     # this iterator serves to separate the dropdown menus equally into 2 columns
-    iterator = 2  # number of columns in GUI
+    iterator = 5  # number of columns in GUI
     # all parameters we want to set in the first GUI window
     for parameter in [[training_stage, training_stage_options, 'Training Stage'],
                       [block_number, block_number_options, "Block nr"],
@@ -74,7 +74,7 @@ def dropdownmenus():
                       [laser_prob, laser_prob_options, 'Laser probability'],
                       [reward_prob, rew_prob_options, 'Reward probability']]:
         # first 6 dropdown menus go in column 1
-        if iterator < 7:
+        if iterator < 9:
             Label(root, width=20, text=parameter[2], font=("Helvetica", 14)).grid(row=iterator, sticky=W, pady=20)
             dropdown = OptionMenu(root, parameter[0], *parameter[1])
             dropdown.grid(row=iterator, column=1)  # position of each dropdown window
@@ -181,11 +181,20 @@ user_input, laser_in_words, laser_b_in_words = run_GUI(user_input)
 # kill GUI after it has been used
 root.destroy()
 
+#############################
+#DataBase mods
+#here we instanticate a session class which internally will take care of creation of paths and DB entries
 session = SessionClass(DB, animal_id=user_input['Subject'], session_note=user_input['Extra_info'],
                        project=DB.cfg['project'], user=DB.cfg['user_id'], experiment_template=DB.cfg['experiment'],
                        expName=DB.cfg['sub_experiment'])
+if user_input['weight']:
+    session.weight = user_input['weight'].replace(',', '.')
+    session.weight_note = user_input['weight note']
+
 resulting_file = path + str(user_input["Subject"]) + '\\' + str(date_and_time) + '_' + str(
         user_input["Subject"] + '_behavior.csv')
+#########################################
+
 # wait a little, then send GUI parameters to arduino
 time.sleep(1)
 send_parameters_to_arduino(arduino, user_input)
@@ -287,10 +296,12 @@ try:
 
     finalize_session(session, resulting_file)
     #this creates session paths, pushes data to DB and copies behavioral data to server
-except Exception:
-    #not so graceful shutdown
-    #This needs to be adopted to the pulling the plug exception...
-    finalize_session(session, resulting_file)
+
+except serial.SerialException:
+    # not so graceful shutdown
+    # if the pulling the plug exception...
+    if (time.time() - start_time) > 60:    # in seconds # if short session
+        finalize_session(session, resulting_file)
 
 
 
