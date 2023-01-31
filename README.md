@@ -7,3 +7,6 @@ Brice De La Crompe,
 brice . de . la . crompe /at/ biologie . uni-freiburg . de,
 Optophysiology Lab (Ilka Diester's lab),
 Freiburg, Germany
+
+
+For specific questions about GUI, please contact megan . j . schneck /at/ gmail . com
