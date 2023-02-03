@@ -9,6 +9,7 @@ def fields_to_write_in(root):
     global extra_info
     global weight
     global weight_note
+    global exptype
     for field in ["Subject", "Extra info","ExpType","Weight", "Weight Note"]:
         if field == "Subject":
             # set up write-in field
@@ -127,6 +128,7 @@ def check_choices(input_first_window, input_second_window, user_input):
     user_input["Extra_info"] = extra_info.get()
     user_input["weight"] = weight.get()
     user_input["weight note"] = weight_note.get()
+    user_input["exp_type"] = exptype.get()
     # return user choices
     return user_input, laser_in_words, laser_b_in_words
 

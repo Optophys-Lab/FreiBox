@@ -10,9 +10,9 @@ from DataBaseConnection import DB, finalize_session
 from datastructure_tools.utils import SessionClass
 
 
-path = "C:\\Users\\ms823\\My Documents\\Double_lick_spout\\DREADD_OFC_pilot_Aug2022\\raw_data\\"
+path = "C:\\Users\\ms823\\Documents\\Double_lick_spout\\DREADD_OFC_pilot_Aug2022\\raw_data\\"
 # specify arduino and transmission parameters
-com = 'COM15'
+com = 'COM3'
 arduino = serial.Serial(com, baudrate=38400, inter_byte_timeout=0.1, timeout=1)
 
 
@@ -185,14 +185,16 @@ root.destroy()
 #DataBase mods
 #here we instanticate a session class which internally will take care of creation of paths and DB entries
 session = SessionClass(DB, animal_id=user_input['Subject'], session_note=user_input['Extra_info'],
-                       project=DB.cfg['project'], user=DB.cfg['user_id'], experiment_template=DB.cfg['experiment'],
+                       project=DB.cfg['project'], user=DB.cfg['user_id'], experiment_template=user_input["exp_type"],
                        expName=DB.cfg['sub_experiment'])
+#TODO change to actually take the chosen option
 if user_input['weight']:
     session.weight = user_input['weight'].replace(',', '.')
     session.weight_note = user_input['weight note']
 
 resulting_file = path + str(user_input["Subject"]) + '\\' + str(date_and_time) + '_' + str(
         user_input["Subject"] + '_behavior.csv')
+print(resulting_file)
 #########################################
 
 # wait a little, then send GUI parameters to arduino
@@ -300,8 +302,10 @@ try:
 except serial.SerialException:
     # not so graceful shutdown
     # if the pulling the plug exception...
-    if (time.time() - start_time) > 60:    # in seconds # if short session
+    if (time.time() - start_time) > 6:    # in seconds # if short session
         finalize_session(session, resulting_file)
+
+
 
 
 

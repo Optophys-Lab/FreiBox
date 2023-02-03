@@ -2,15 +2,17 @@ import os
 import csv
 import time
 from Setup_variables import daylist, start_t_list,date_and_time, header
-
+from pathlib import Path
 
 # check if appropriate folder for output exists
 # if not make it
 def make_output_folders(user_input, path):
-    if not os.path.exists(path + str(user_input["Subject"])):
-        os.makedirs(path + str(user_input["Subject"]))
-    else:
-        pass
+    (Path(path) / user_input["Subject"]).mkdir(exist_ok=True)
+    # if not (Path(path) / user_input["Subject"]).exists():
+    # #if not os.path.exists(path + str(user_input["Subject"])):
+    #     os.makedirs(path + str(user_input["Subject"]))
+    # else:
+    #     pass
 
 
 def write_output_into_csv(my_zipped_list, first_trial_over_bool, user_input, path):

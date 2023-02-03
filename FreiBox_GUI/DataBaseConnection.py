@@ -28,15 +28,17 @@ def finalize_session(session: datastructure_tools.utils.SessionClass, resulting_
     :param resulting_file: filepath to behavioral data to be copied
     :return: True if success
     """
+    print('we are here')
     session.createSession_path()
     session.checkInputs()
     if session.weight:
         session.pushWeights()
     block = [block for block in session.pipeline['0_raw'] if 'beh' in block]
     # copy the file
-    target_path = Path(DB.cfg['Server_path']) / session.session_dir / block[0]
+    target_path = Path(DB.server_path) / session.session_dir / block[0]
     if target_path.exists():
         copy2(resulting_file, target_path)
+        print('file was copied')
     else:
         raise FileNotFoundError('path %s was not found'%target_path)
 
