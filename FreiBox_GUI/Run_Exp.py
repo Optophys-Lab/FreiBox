@@ -1,4 +1,4 @@
-#import serial
+import serial
 import time
 import os
 from tkinter import *
@@ -21,7 +21,7 @@ path = "C:\\BehaviorData\\Double_lick_spout\\Brice\\raw_data\\"
 com = 'COM4'
 WAITTIME_ABORT = 60   # time in seconds, if session i stoped inside this window, to session is created and no files are copied
 
-#arduino = serial.Serial(com, baudrate=38400, inter_byte_timeout=0.1, timeout=1)
+arduino = serial.Serial(com, baudrate=38400, inter_byte_timeout=0.1, timeout=1)
 # Variables for GUI input
 user_input = {'Subject': "5",
               'Extra_info': "5",
