@@ -1,6 +1,6 @@
 Uploading Done!
-In this version, we changed the 3d-printed design of the FreiBox commutator to facilitate the assembly. To reduce the noise, we changed the 3D-printed gears buy a timing pulley system.
-However, the detection principle and the Arduino Code is the same as for v1.
+In this version, we changed the 3d-printed design of the FreiBox commutator to facilitate the assembly and reduce the noise. We changed the 3D-printed gears buy a timing pulley system.
+Please note that the detection principle and the Arduino Code is the same as for v1.
 
 Check the 'FreiBoxCommutator_V2 _AssemblyInstruction.pptx' to assemble the commutator!
 
