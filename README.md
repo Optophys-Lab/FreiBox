@@ -12,18 +12,24 @@ Freiburg, Germany
 For specific question regarding the GUI, please contact:
 megan . j . schneck /at/ gmail . com
 
-
-___________________
+______________________
 Component Overview
-___________________
+______________________
 
 ![](FreiBox_ComponentOverview.jpeg)
 
 
 
-___________________
+______________________
 Licking Chamber
-___________________
+______________________
 
 ![](LickingChamber_zoom.jpg)
 
+
+
+______________________
+Lickometer in action
+______________________
+
+![](LickingRecording example_Compressed.avi)
