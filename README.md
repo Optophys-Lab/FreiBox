@@ -32,4 +32,4 @@ ______________________
 Lickometer in action
 ______________________
 
-![](https://github.com/Optophys-Lab/FreiBox/tree/main/Photos/LickingRecording example_Compressed.mp4)
+![](https://github.com/Optophys-Lab/FreiBox/tree/main/Photos/LickingRecordingExample_Compressed)
