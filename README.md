@@ -32,4 +32,4 @@ ______________________
 Lickometer in action
 ______________________
 
-![](LickingRecording example_Compressed.gif)
+![](/Photos/LickingRecording example_Compressed.mp4)
